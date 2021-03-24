@@ -1,0 +1,1725 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "SBEW1-VRT-DEV-ADF-01"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
+		"AzureFileStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureFileStorage1'"
+		},
+		"AzureTableStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureTableStorage'"
+		},
+		"CosmosDbSQLAPIService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDbSQLAPIService'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://sbew1vrtdvsta01.dfs.core.windows.net"
+		},
+		"OSCARRestService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/oscar_data_sync_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "List all crew code",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "RestSink",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": 10,
+								"requestMethod": "POST",
+								"writeBatchSize": 10000,
+								"httpCompressionType": "none",
+								"storeSettings": {
+									"type": "AzureFileStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "AllCrewRestResource",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AllCrewJson",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Crew Loop",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "All crew look up",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('All crew look up').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "Get crew detail",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [
+										{
+											"name": "Source",
+											"value": "@{concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', item())}"
+										},
+										{
+											"name": "Destination",
+											"value": "crew"
+										}
+									],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET"
+										},
+										"sink": {
+											"type": "CosmosDbSqlApiSink",
+											"writeBehavior": "upsert",
+											"disableMetricsCollection": true
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "CrewDetailRestResource",
+											"type": "DatasetReference",
+											"parameters": {
+												"crewid": {
+													"value": "@item().Code",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CosmosDbSqlApiCrewRawCollection",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Get crew compliance",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"additionalColumns": [
+												{
+													"name": "crewId",
+													"value": {
+														"value": "@item().Code",
+														"type": "Expression"
+													}
+												}
+											],
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET"
+										},
+										"sink": {
+											"type": "CosmosDbSqlApiSink",
+											"writeBehavior": "upsert",
+											"disableMetricsCollection": true
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "CrewComplianceRestResource",
+											"type": "DatasetReference",
+											"parameters": {
+												"crew_code": "@item().Code"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CosmosDbSqlApiComplianceRawCollection",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Crew Data Flow",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Get crew detail",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "crew_dataflow",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"source1": {},
+												"sink1": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine",
+										"runConcurrently": true
+									}
+								},
+								{
+									"name": "Compliance Dataflow",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "Get crew compliance",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "compliance_dataflow",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"source1": {},
+												"sink1": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "All crew look up",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "List all crew code",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureFileStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "AllCrewJson",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-03-24T12:22:27Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AllCrewRestResource')]",
+				"[concat(variables('factoryId'), '/datasets/AllCrewJson')]",
+				"[concat(variables('factoryId'), '/datasets/CrewDetailRestResource')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCrewRawCollection')]",
+				"[concat(variables('factoryId'), '/datasets/CrewComplianceRestResource')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiComplianceRawCollection')]",
+				"[concat(variables('factoryId'), '/dataflows/crew_dataflow')]",
+				"[concat(variables('factoryId'), '/dataflows/compliance_dataflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AllCrewJson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureFileStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureFileStorageLocation",
+						"fileName": "allcrew.json",
+						"folderPath": "adf_sink"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Code": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureFileStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AllCrewRestResource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OSCARRestService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/crew_code/all"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OSCARRestService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ComplianceRawAzureTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureTableStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"crewid": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "complianceraw"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureTableStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiComplianceCollection')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDbSQLAPIService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"DocumentExpiryDate": {
+							"type": "string"
+						},
+						"DocumentIssueDate": {
+							"type": "string"
+						},
+						"DocumentNumber": {
+							"type": "string"
+						},
+						"DocumentRemarks": {
+							"type": "string"
+						},
+						"DocumentStatus": {
+							"type": "string"
+						},
+						"DocumentType": {
+							"type": "string"
+						},
+						"DocumentValidityMonth": {
+							"type": "integer"
+						},
+						"MatrixName": {
+							"type": "string"
+						},
+						"MatrixRemarks": {
+							"type": "null"
+						},
+						"MatrixStatus": {
+							"type": "string"
+						},
+						"MatrixType": {
+							"type": "string"
+						},
+						"userId": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "compliance"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDbSQLAPIService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiComplianceRawCollection')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDbSQLAPIService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"ActualPlanned": {
+							"type": "string"
+						},
+						"CanculatedDate": {
+							"type": "string"
+						},
+						"Percentage": {
+							"type": "integer"
+						},
+						"Rank": {
+							"type": "string"
+						},
+						"Requirement": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"Matrics": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"Documents": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"DocumentExpiryDate": {
+																"type": "string"
+															},
+															"DocumentIssueDate": {
+																"type": "string"
+															},
+															"DocumentNumber": {
+																"type": "string"
+															},
+															"DocumentRemarks": {
+																"type": "string"
+															},
+															"DocumentStatus": {
+																"type": "string"
+															},
+															"DocumentType": {
+																"type": "string"
+															},
+															"DocumentValidityMonth": {
+																"type": "null"
+															}
+														}
+													}
+												},
+												"MatrixName": {
+													"type": "string"
+												},
+												"MatrixRemarks": {
+													"type": "null"
+												},
+												"MatrixStatus": {
+													"type": "string"
+												},
+												"MatrixType": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"RequirementType": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"Vessel": {
+							"type": "string"
+						},
+						"VesselFlag": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "compliance_raw"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDbSQLAPIService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCrewCollection')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDbSQLAPIService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"surname": {
+							"type": "string"
+						},
+						"pool": {
+							"type": "string"
+						},
+						"rank": {
+							"type": "string"
+						},
+						"offshore": {
+							"type": "boolean"
+						},
+						"SBMer": {
+							"type": "boolean"
+						},
+						"vesselName": {
+							"type": "string"
+						},
+						"region": {
+							"type": "integer"
+						},
+						"department": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "crew"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDbSQLAPIService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSqlApiCrewRawCollection')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDbSQLAPIService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Crew_Code": {
+							"type": "integer"
+						},
+						"Crew_Surname": {
+							"type": "string"
+						},
+						"Crew_Name": {
+							"type": "string"
+						},
+						"Crew_Fathers_Name": {
+							"type": "null"
+						},
+						"Crew_Mothers_Name": {
+							"type": "null"
+						},
+						"Crew_Nationality": {
+							"type": "string"
+						},
+						"Crew_Birth_Date": {
+							"type": "string"
+						},
+						"Crew_Born_Place": {
+							"type": "null"
+						},
+						"Crew_Rank": {
+							"type": "string"
+						},
+						"Crew_Rank_Certificate": {
+							"type": "null"
+						},
+						"Prior_Exp_Months": {
+							"type": "null"
+						},
+						"Prior_Exp_Voyages": {
+							"type": "null"
+						},
+						"Last_Sign_Off_Date": {
+							"type": "null"
+						},
+						"Available_From_Date": {
+							"type": "null"
+						},
+						"Decision_Code": {
+							"type": "string"
+						},
+						"Active_Flag": {
+							"type": "string"
+						},
+						"Remarks1": {
+							"type": "null"
+						},
+						"Remarks2": {
+							"type": "null"
+						},
+						"Health_Status": {
+							"type": "null"
+						},
+						"Status_Code": {
+							"type": "string"
+						},
+						"Source_Code": {
+							"type": "string"
+						},
+						"Crew_Name2": {
+							"type": "null"
+						},
+						"Crew_Nationality2": {
+							"type": "null"
+						},
+						"Next_Vessel": {
+							"type": "string"
+						},
+						"Promotion": {
+							"type": "null"
+						},
+						"Seniority": {
+							"type": "integer"
+						},
+						"Promotion_Date": {
+							"type": "null"
+						},
+						"Promotion_Rank": {
+							"type": "null"
+						},
+						"Date_Last_Med": {
+							"type": "null"
+						},
+						"Prev_Exp_As": {
+							"type": "null"
+						},
+						"Crew_Type": {
+							"type": "string"
+						},
+						"Crew_Religion": {
+							"type": "null"
+						},
+						"Manual_Update": {
+							"type": "null"
+						},
+						"Pension_Flag": {
+							"type": "null"
+						},
+						"Est_Sign_On": {
+							"type": "null"
+						},
+						"Sign_On_Remarks": {
+							"type": "null"
+						},
+						"Sign_On_Remarks2": {
+							"type": "null"
+						},
+						"Sign_On_Remarks3": {
+							"type": "null"
+						},
+						"Port_Authority": {
+							"type": "null"
+						},
+						"Port_Authority2": {
+							"type": "null"
+						},
+						"Rank_Seniority": {
+							"type": "null"
+						},
+						"Application_Date": {
+							"type": "string"
+						},
+						"Crew_Ssn": {
+							"type": "null"
+						},
+						"Crew_Isn_Employment_No": {
+							"type": "null"
+						},
+						"Crew_Employment_Year": {
+							"type": "null"
+						},
+						"Office_Vessel_Flag": {
+							"type": "null"
+						},
+						"On_Vessel": {
+							"type": "null"
+						},
+						"English_Test": {
+							"type": "null"
+						},
+						"Extended_Leave": {
+							"type": "null"
+						},
+						"Lv_Id": {
+							"type": "null"
+						},
+						"Ob_Stat": {
+							"type": "null"
+						},
+						"Lc_Id": {
+							"type": "null"
+						},
+						"Crew_Pool": {
+							"type": "string"
+						},
+						"Crew_Race": {
+							"type": "null"
+						},
+						"Pr_Status": {
+							"type": "null"
+						},
+						"Crew_Rank_Point": {
+							"type": "null"
+						},
+						"Crew_Blood_Type": {
+							"type": "null"
+						},
+						"Crew_Eye_Sight": {
+							"type": "null"
+						},
+						"Crew_Color_Blindness": {
+							"type": "null"
+						},
+						"Crew_Alergies": {
+							"type": "null"
+						},
+						"Crew_Height": {
+							"type": "null"
+						},
+						"Crew_Weight": {
+							"type": "null"
+						},
+						"Crew_Blood_Rh": {
+							"type": "null"
+						},
+						"Cpf_Number": {
+							"type": "null"
+						},
+						"Cpf_Flag": {
+							"type": "string"
+						},
+						"Martial_Status": {
+							"type": "string"
+						},
+						"Wage_Type": {
+							"type": "null"
+						},
+						"Crew_Nationality_Date": {
+							"type": "null"
+						},
+						"Crew_Rank_Certificate_Date": {
+							"type": "null"
+						},
+						"Crews_Rank_Point_Date": {
+							"type": "null"
+						},
+						"Crew_ID": {
+							"type": "null"
+						},
+						"Crew_Socso": {
+							"type": "null"
+						},
+						"Crew_Hrdf": {
+							"type": "null"
+						},
+						"Crew_Srcno": {
+							"type": "null"
+						},
+						"Crew_Sss_No": {
+							"type": "null"
+						},
+						"Crew_Cis_Idno": {
+							"type": "string"
+						},
+						"Crew_Dis_Marks": {
+							"type": "null"
+						},
+						"Crew_Eyes": {
+							"type": "null"
+						},
+						"Crew_Hair": {
+							"type": "null"
+						},
+						"Crew_Principal": {
+							"type": "integer"
+						},
+						"Crew_Group_Date": {
+							"type": "null"
+						},
+						"Crew_Comp_Date": {
+							"type": "null"
+						},
+						"Crew_Phealth_No": {
+							"type": "null"
+						},
+						"Crew_Tin": {
+							"type": "null"
+						},
+						"Crew_Nor_Idno": {
+							"type": "null"
+						},
+						"Crew_Shipnet": {
+							"type": "null"
+						},
+						"Crew_Middlename": {
+							"type": "null"
+						},
+						"Crew_Pagibig_No": {
+							"type": "null"
+						},
+						"Crew_password": {
+							"type": "null"
+						},
+						"Crew_Mother_Maiden_Name": {
+							"type": "null"
+						},
+						"Crew_Shoe_Size": {
+							"type": "null"
+						},
+						"Crew_Boiler_Suit_Size": {
+							"type": "null"
+						},
+						"Crew_Marriage_Date": {
+							"type": "null"
+						},
+						"Crew_Indos_No": {
+							"type": "null"
+						},
+						"Crew_Tax_Regime": {
+							"type": "null"
+						},
+						"Crew_Birth_Country": {
+							"type": "null"
+						},
+						"Crew_Mother_Surname": {
+							"type": "null"
+						},
+						"Crew_Mother_Middle_Name": {
+							"type": "null"
+						},
+						"Crew_Father_Surname": {
+							"type": "null"
+						},
+						"Crew_Father_Middle_Name": {
+							"type": "null"
+						},
+						"Crew_Medical_Insurance_Scheme": {
+							"type": "null"
+						},
+						"Crew_Sb_Country": {
+							"type": "string"
+						},
+						"Crew_Orig_Surname": {
+							"type": "null"
+						},
+						"Crew_Orig_Name": {
+							"type": "null"
+						},
+						"Crew_Orig_Middlename": {
+							"type": "null"
+						},
+						"Crew_Orig_Born_Place": {
+							"type": "null"
+						},
+						"Dualog_Status": {
+							"type": "null"
+						},
+						"Crew_Medication": {
+							"type": "null"
+						},
+						"Crew_Nickname": {
+							"type": "string"
+						},
+						"Crew_Change_Password": {
+							"type": "null"
+						},
+						"Last_Edited_Date": {
+							"type": "string"
+						},
+						"Crew_Sex": {
+							"type": "string"
+						},
+						"Employment_End_Date": {
+							"type": "null"
+						},
+						"Passport_Number": {
+							"type": "string"
+						},
+						"Passport_Issue_Place": {
+							"type": "string"
+						},
+						"Passport_Country": {
+							"type": "string"
+						},
+						"Passport_Details": {
+							"type": "null"
+						},
+						"Passport_Expiry_Date": {
+							"type": "string"
+						},
+						"Passport_Issued_Date": {
+							"type": "string"
+						},
+						"SeamanBook_Number": {
+							"type": "string"
+						},
+						"SeamanBook_Issued": {
+							"type": "string"
+						},
+						"SeamanBook_Expiry": {
+							"type": "string"
+						},
+						"SeamanBook_Place": {
+							"type": "string"
+						},
+						"Crew_Status_Code": {
+							"type": "string"
+						},
+						"Manning_Office": {
+							"type": "string"
+						},
+						"Vessel_Name": {
+							"type": "string"
+						},
+						"Wage_Matrix": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "crew_raw"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDbSQLAPIService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CrewComplianceRestResource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OSCARRestService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"crew_code": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/complianceStatus?crew_code=', dataset().crew_code, '&isSim=true')",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OSCARRestService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CrewDetailRestResource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OSCARRestService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"crewid": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', dataset().crewid)",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OSCARRestService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/crewdetailjson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Crew_Code": {
+							"type": "integer"
+						},
+						"Crew_Surname": {
+							"type": "string"
+						},
+						"Crew_Name": {
+							"type": "string"
+						},
+						"Crew_Fathers_Name": {
+							"type": "null"
+						},
+						"Crew_Mothers_Name": {
+							"type": "null"
+						},
+						"Crew_Nationality": {
+							"type": "string"
+						},
+						"Crew_Birth_Date": {
+							"type": "string"
+						},
+						"Crew_Born_Place": {
+							"type": "null"
+						},
+						"Crew_Rank": {
+							"type": "string"
+						},
+						"Crew_Rank_Certificate": {
+							"type": "null"
+						},
+						"Prior_Exp_Months": {
+							"type": "null"
+						},
+						"Prior_Exp_Voyages": {
+							"type": "null"
+						},
+						"Last_Sign_Off_Date": {
+							"type": "null"
+						},
+						"Available_From_Date": {
+							"type": "null"
+						},
+						"Decision_Code": {
+							"type": "string"
+						},
+						"Active_Flag": {
+							"type": "string"
+						},
+						"Remarks1": {
+							"type": "null"
+						},
+						"Remarks2": {
+							"type": "null"
+						},
+						"Health_Status": {
+							"type": "null"
+						},
+						"Status_Code": {
+							"type": "string"
+						},
+						"Source_Code": {
+							"type": "string"
+						},
+						"Crew_Name2": {
+							"type": "null"
+						},
+						"Crew_Nationality2": {
+							"type": "null"
+						},
+						"Next_Vessel": {
+							"type": "string"
+						},
+						"Promotion": {
+							"type": "null"
+						},
+						"Seniority": {
+							"type": "integer"
+						},
+						"Promotion_Date": {
+							"type": "null"
+						},
+						"Promotion_Rank": {
+							"type": "null"
+						},
+						"Date_Last_Med": {
+							"type": "null"
+						},
+						"Prev_Exp_As": {
+							"type": "null"
+						},
+						"Crew_Type": {
+							"type": "string"
+						},
+						"Crew_Religion": {
+							"type": "null"
+						},
+						"Manual_Update": {
+							"type": "null"
+						},
+						"Pension_Flag": {
+							"type": "null"
+						},
+						"Est_Sign_On": {
+							"type": "null"
+						},
+						"Sign_On_Remarks": {
+							"type": "null"
+						},
+						"Sign_On_Remarks2": {
+							"type": "null"
+						},
+						"Sign_On_Remarks3": {
+							"type": "null"
+						},
+						"Port_Authority": {
+							"type": "null"
+						},
+						"Port_Authority2": {
+							"type": "null"
+						},
+						"Rank_Seniority": {
+							"type": "null"
+						},
+						"Application_Date": {
+							"type": "string"
+						},
+						"Crew_Ssn": {
+							"type": "null"
+						},
+						"Crew_Isn_Employment_No": {
+							"type": "null"
+						},
+						"Crew_Employment_Year": {
+							"type": "null"
+						},
+						"Office_Vessel_Flag": {
+							"type": "null"
+						},
+						"On_Vessel": {
+							"type": "null"
+						},
+						"English_Test": {
+							"type": "null"
+						},
+						"Extended_Leave": {
+							"type": "null"
+						},
+						"Lv_Id": {
+							"type": "null"
+						},
+						"Ob_Stat": {
+							"type": "null"
+						},
+						"Lc_Id": {
+							"type": "null"
+						},
+						"Crew_Pool": {
+							"type": "string"
+						},
+						"Crew_Race": {
+							"type": "null"
+						},
+						"Pr_Status": {
+							"type": "null"
+						},
+						"Crew_Rank_Point": {
+							"type": "null"
+						},
+						"Crew_Blood_Type": {
+							"type": "null"
+						},
+						"Crew_Eye_Sight": {
+							"type": "null"
+						},
+						"Crew_Color_Blindness": {
+							"type": "null"
+						},
+						"Crew_Alergies": {
+							"type": "null"
+						},
+						"Crew_Height": {
+							"type": "null"
+						},
+						"Crew_Weight": {
+							"type": "null"
+						},
+						"Crew_Blood_Rh": {
+							"type": "null"
+						},
+						"Cpf_Number": {
+							"type": "null"
+						},
+						"Cpf_Flag": {
+							"type": "string"
+						},
+						"Martial_Status": {
+							"type": "string"
+						},
+						"Wage_Type": {
+							"type": "null"
+						},
+						"Crew_Nationality_Date": {
+							"type": "null"
+						},
+						"Crew_Rank_Certificate_Date": {
+							"type": "null"
+						},
+						"Crews_Rank_Point_Date": {
+							"type": "null"
+						},
+						"Crew_ID": {
+							"type": "null"
+						},
+						"Crew_Socso": {
+							"type": "null"
+						},
+						"Crew_Hrdf": {
+							"type": "null"
+						},
+						"Crew_Srcno": {
+							"type": "null"
+						},
+						"Crew_Sss_No": {
+							"type": "null"
+						},
+						"Crew_Cis_Idno": {
+							"type": "string"
+						},
+						"Crew_Dis_Marks": {
+							"type": "null"
+						},
+						"Crew_Eyes": {
+							"type": "null"
+						},
+						"Crew_Hair": {
+							"type": "null"
+						},
+						"Crew_Principal": {
+							"type": "integer"
+						},
+						"Crew_Group_Date": {
+							"type": "null"
+						},
+						"Crew_Comp_Date": {
+							"type": "null"
+						},
+						"Crew_Phealth_No": {
+							"type": "null"
+						},
+						"Crew_Tin": {
+							"type": "null"
+						},
+						"Crew_Nor_Idno": {
+							"type": "null"
+						},
+						"Crew_Shipnet": {
+							"type": "null"
+						},
+						"Crew_Middlename": {
+							"type": "null"
+						},
+						"Crew_Pagibig_No": {
+							"type": "null"
+						},
+						"Crew_password": {
+							"type": "null"
+						},
+						"Crew_Mother_Maiden_Name": {
+							"type": "null"
+						},
+						"Crew_Shoe_Size": {
+							"type": "null"
+						},
+						"Crew_Boiler_Suit_Size": {
+							"type": "null"
+						},
+						"Crew_Marriage_Date": {
+							"type": "null"
+						},
+						"Crew_Indos_No": {
+							"type": "null"
+						},
+						"Crew_Tax_Regime": {
+							"type": "null"
+						},
+						"Crew_Birth_Country": {
+							"type": "null"
+						},
+						"Crew_Mother_Surname": {
+							"type": "null"
+						},
+						"Crew_Mother_Middle_Name": {
+							"type": "null"
+						},
+						"Crew_Father_Surname": {
+							"type": "null"
+						},
+						"Crew_Father_Middle_Name": {
+							"type": "null"
+						},
+						"Crew_Medical_Insurance_Scheme": {
+							"type": "null"
+						},
+						"Crew_Sb_Country": {
+							"type": "string"
+						},
+						"Crew_Orig_Surname": {
+							"type": "null"
+						},
+						"Crew_Orig_Name": {
+							"type": "null"
+						},
+						"Crew_Orig_Middlename": {
+							"type": "null"
+						},
+						"Crew_Orig_Born_Place": {
+							"type": "null"
+						},
+						"Dualog_Status": {
+							"type": "null"
+						},
+						"Crew_Medication": {
+							"type": "null"
+						},
+						"Crew_Nickname": {
+							"type": "string"
+						},
+						"Crew_Change_Password": {
+							"type": "null"
+						},
+						"Last_Edited_Date": {
+							"type": "string"
+						},
+						"Crew_Sex": {
+							"type": "string"
+						},
+						"Employment_End_Date": {
+							"type": "null"
+						},
+						"Passport_Number": {
+							"type": "string"
+						},
+						"Passport_Issue_Place": {
+							"type": "string"
+						},
+						"Passport_Country": {
+							"type": "string"
+						},
+						"Passport_Details": {
+							"type": "null"
+						},
+						"Passport_Expiry_Date": {
+							"type": "string"
+						},
+						"Passport_Issued_Date": {
+							"type": "string"
+						},
+						"SeamanBook_Number": {
+							"type": "string"
+						},
+						"SeamanBook_Issued": {
+							"type": "string"
+						},
+						"SeamanBook_Expiry": {
+							"type": "string"
+						},
+						"SeamanBook_Place": {
+							"type": "string"
+						},
+						"Crew_Status_Code": {
+							"type": "string"
+						},
+						"Manning_Office": {
+							"type": "string"
+						},
+						"Vessel_Name": {
+							"type": "string"
+						},
+						"Wage_Matrix": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime1",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureFileStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFileStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureFileStorage1_connectionString')]",
+					"fileShare": "vrtrainingfileshare"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureTableStorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureTableStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureTableStorage_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSQLAPIService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('CosmosDbSQLAPIService_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OSCARRestService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('OSCARRestService_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous",
+					"authHeaders": {
+						"Authorization": {
+							"type": "SecureString",
+							"value": "**********"
+						},
+						"Content-Type": {
+							"type": "SecureString",
+							"value": "**********"
+						}
+					}
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime1",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/compliance_dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CosmosDbSqlApiComplianceRawCollection",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "CosmosDbSqlApiComplianceCollection",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "FilterActualPlanned"
+						},
+						{
+							"name": "FilterMandatoryRequirement"
+						},
+						{
+							"name": "FlattenRequirement"
+						},
+						{
+							"name": "FlattenMatrixs"
+						},
+						{
+							"name": "FilterMatrixName"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "FlattenDocuments"
+						}
+					],
+					"script": "source(output(\n\t\tActualPlanned as string,\n\t\tCanculatedDate as string,\n\t\tPercentage as integer,\n\t\tRank as string,\n\t\tRequirement as (RequirementType as string, Matrics as (MatrixStatus as string, MatrixType as string, MatrixRemarks as string, MatrixName as string, Documents as (DocumentStatus as string, DocumentExpiryDate as string, DocumentType as string, DocumentNumber as string, DocumentValidityMonth as integer, DocumentIssueDate as string, DocumentRemarks as string)[])[])[],\n\t\tVessel as string,\n\t\tVesselFlag as string,\n\t\tcrewId as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'document') ~> source1\nsource1 filter(equalsIgnoreCase(byName('ActualPlanned'), 'Planned')) ~> FilterActualPlanned\nFlattenRequirement filter(equalsIgnoreCase(byName('RequirementType'), 'Mandatory Requirements')) ~> FilterMandatoryRequirement\nFilterActualPlanned foldDown(unroll(Requirement, Requirement),\n\tmapColumn(\n\t\tRequirementType = Requirement.RequirementType,\n\t\tMatrics = Requirement.Matrics,\n\t\tPercentage,\n\t\tRank,\n\t\tCanculatedDate,\n\t\tcrewId\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenRequirement\nFilterMandatoryRequirement foldDown(unroll(Matrics, Matrics),\n\tmapColumn(\n\t\tRequirementType,\n\t\tPercentage,\n\t\tRank,\n\t\tCalculatedDate = CanculatedDate,\n\t\tcrewId,\n\t\tMatrics\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenMatrixs\nFlattenMatrixs filter(equalsIgnoreCase(Matrics.MatrixName, 'SBM Operations Readiness CORE - Region 1')) ~> FilterMatrixName\nFlattenDocuments derive(crewId = toString(crewId)) ~> DerivedColumn1\nFilterMatrixName foldDown(unroll(Matrics.Documents, Matrics.Documents),\n\tmapColumn(\n\t\tRequirementType,\n\t\tPercentage,\n\t\tRank,\n\t\tCalculatedDate,\n\t\tcrewId,\n\t\tDocuments = Matrics.Documents,\n\t\tMatrixStatus = Matrics.MatrixStatus,\n\t\tMatrixRemarks = Matrics.MatrixRemarks,\n\t\tMatrixName = Matrics.MatrixName,\n\t\tMatrixType = Matrics.MatrixType\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenDocuments\nDerivedColumn1 sink(input(\n\t\tDocumentExpiryDate as string,\n\t\tDocumentIssueDate as string,\n\t\tDocumentNumber as string,\n\t\tDocumentRemarks as string,\n\t\tDocumentStatus as string,\n\t\tDocumentType as string,\n\t\tDocumentValidityMonth as string,\n\t\tMatrixName as string,\n\t\tMatrixRemarks as string,\n\t\tMatrixStatus as string,\n\t\tMatrixType as string,\n\t\tuserId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'document',\n\tpartitionKey: ['/id'],\n\tthroughput: 4000,\n\tmapColumn(\n\t\tPercentage,\n\t\tRank,\n\t\tcrewId,\n\t\tMatricsStatus = MatrixStatus,\n\t\tMatrixType,\n\t\tMatrixRemarks,\n\t\tMatrixName,\n\t\tDocuments,\n\t\tCalculatedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiComplianceRawCollection')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiComplianceCollection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/crew_dataflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CosmosDbSqlApiCrewRawCollection",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "CosmosDbSqlApiCrewCollection",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Select"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"script": "source(output(\n\t\tCrew_Code as string,\n\t\tCrew_Surname as string,\n\t\tCrew_Name as string,\n\t\tCrew_Fathers_Name as string,\n\t\tCrew_Mothers_Name as string,\n\t\tCrew_Nationality as string,\n\t\tCrew_Birth_Date as string,\n\t\tCrew_Born_Place as string,\n\t\tCrew_Rank as string,\n\t\tCrew_Rank_Certificate as string,\n\t\tPrior_Exp_Months as string,\n\t\tPrior_Exp_Voyages as string,\n\t\tLast_Sign_Off_Date as string,\n\t\tAvailable_From_Date as string,\n\t\tDecision_Code as string,\n\t\tActive_Flag as string,\n\t\tRemarks1 as string,\n\t\tRemarks2 as string,\n\t\tHealth_Status as string,\n\t\tStatus_Code as string,\n\t\tSource_Code as string,\n\t\tCrew_Name2 as string,\n\t\tCrew_Nationality2 as string,\n\t\tNext_Vessel as string,\n\t\tPromotion as string,\n\t\tSeniority as string,\n\t\tPromotion_Date as string,\n\t\tPromotion_Rank as string,\n\t\tDate_Last_Med as string,\n\t\tPrev_Exp_As as string,\n\t\tCrew_Type as string,\n\t\tCrew_Religion as string,\n\t\tManual_Update as string,\n\t\tPension_Flag as string,\n\t\tEst_Sign_On as string,\n\t\tSign_On_Remarks as string,\n\t\tSign_On_Remarks2 as string,\n\t\tSign_On_Remarks3 as string,\n\t\tPort_Authority as string,\n\t\tPort_Authority2 as string,\n\t\tRank_Seniority as string,\n\t\tApplication_Date as string,\n\t\tCrew_Ssn as string,\n\t\tCrew_Isn_Employment_No as string,\n\t\tCrew_Employment_Year as string,\n\t\tOffice_Vessel_Flag as string,\n\t\tOn_Vessel as string,\n\t\tEnglish_Test as string,\n\t\tExtended_Leave as string,\n\t\tLv_Id as string,\n\t\tOb_Stat as string,\n\t\tLc_Id as string,\n\t\tCrew_Pool as string,\n\t\tCrew_Race as string,\n\t\tPr_Status as string,\n\t\tCrew_Rank_Point as string,\n\t\tCrew_Blood_Type as string,\n\t\tCrew_Eye_Sight as string,\n\t\tCrew_Color_Blindness as string,\n\t\tCrew_Alergies as string,\n\t\tCrew_Height as string,\n\t\tCrew_Weight as string,\n\t\tCrew_Blood_Rh as string,\n\t\tCpf_Number as string,\n\t\tCpf_Flag as string,\n\t\tMartial_Status as string,\n\t\tWage_Type as string,\n\t\tCrew_Nationality_Date as string,\n\t\tCrew_Rank_Certificate_Date as string,\n\t\tCrews_Rank_Point_Date as string,\n\t\tCrew_ID as string,\n\t\tCrew_Socso as string,\n\t\tCrew_Hrdf as string,\n\t\tCrew_Srcno as string,\n\t\tCrew_Sss_No as string,\n\t\tCrew_Cis_Idno as string,\n\t\tCrew_Dis_Marks as string,\n\t\tCrew_Eyes as string,\n\t\tCrew_Hair as string,\n\t\tCrew_Principal as string,\n\t\tCrew_Group_Date as string,\n\t\tCrew_Comp_Date as string,\n\t\tCrew_Phealth_No as string,\n\t\tCrew_Tin as string,\n\t\tCrew_Nor_Idno as string,\n\t\tCrew_Shipnet as string,\n\t\tCrew_Middlename as string,\n\t\tCrew_Pagibig_No as string,\n\t\tCrew_password as string,\n\t\tCrew_Mother_Maiden_Name as string,\n\t\tCrew_Shoe_Size as string,\n\t\tCrew_Boiler_Suit_Size as string,\n\t\tCrew_Marriage_Date as string,\n\t\tCrew_Indos_No as string,\n\t\tCrew_Tax_Regime as string,\n\t\tCrew_Birth_Country as string,\n\t\tCrew_Mother_Surname as string,\n\t\tCrew_Mother_Middle_Name as string,\n\t\tCrew_Father_Surname as string,\n\t\tCrew_Father_Middle_Name as string,\n\t\tCrew_Medical_Insurance_Scheme as string,\n\t\tCrew_Sb_Country as string,\n\t\tCrew_Orig_Surname as string,\n\t\tCrew_Orig_Name as string,\n\t\tCrew_Orig_Middlename as string,\n\t\tCrew_Orig_Born_Place as string,\n\t\tDualog_Status as string,\n\t\tCrew_Medication as string,\n\t\tCrew_Nickname as string,\n\t\tCrew_Change_Password as string,\n\t\tLast_Edited_Date as string,\n\t\tCrew_Sex as string,\n\t\tEmployment_End_Date as string,\n\t\tPassport_Number as string,\n\t\tPassport_Issue_Place as string,\n\t\tPassport_Country as string,\n\t\tPassport_Details as string,\n\t\tPassport_Expiry_Date as string,\n\t\tPassport_Issued_Date as string,\n\t\tSeamanBook_Number as string,\n\t\tSeamanBook_Issued as string,\n\t\tSeamanBook_Expiry as string,\n\t\tSeamanBook_Place as string,\n\t\tCrew_Status_Code as string,\n\t\tManning_Office as string,\n\t\tVessel_Name as string,\n\t\tWage_Matrix as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'document',\n\tsystemColumns: false) ~> source1\nsource1 select(mapColumn(\n\t\tid = Crew_Code,\n\t\tsurname = Crew_Surname,\n\t\tname = Crew_Name,\n\t\trank = Crew_Rank,\n\t\tSBMer = Crew_Type,\n\t\tvesselName = Vessel_Name,\n\t\tpool = Crew_Pool\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select\nSelect derive(SBMer = !equalsIgnoreCase(byName('SBMer'), \"VENDOR\"),\n\t\tregion = iif(contains(['FPSO Cidade de Saquarema', 'FPSO Cidade de Maricá', 'FPSO Cidade de Ilhabela', 'FPSO Cidade de Paraty', 'FPSO CIdade de Anchieta', 'FPSO Espírito Santo', 'FPSO Capixaba'], #item == byName('vesselName')), 1, 2)) ~> DerivedColumn1\nDerivedColumn1 alterRow(updateIf(true())) ~> AlterRow1\nAlterRow1 sink(input(\n\t\tname as string,\n\t\tsurname as string,\n\t\tpool as string,\n\t\trank as string,\n\t\toffshore as boolean,\n\t\tSBMer as boolean,\n\t\tvesselName as string,\n\t\tregion as string,\n\t\tdepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tformat: 'document',\n\tpartitionKey: ['/id'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCrewRawCollection')]",
+				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCrewCollection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"preventDataExfiltration": false
+			},
+			"dependsOn": []
+		}
+	]
+}
