@@ -1,0 +1,9 @@
+{
+	"name": "SBEW1-VRT-DEV-ADF-01",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9e3435f0-ed69-47bf-b0fe-8845e4233bf0",
+		"tenantId": "81effa57-092e-4f44-acc1-0cc5105272cb"
+	}
+}

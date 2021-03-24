@@ -1,0 +1,16 @@
+{
+	"name": "AllCrewRestResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OSCARRestService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/crew_code/all"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

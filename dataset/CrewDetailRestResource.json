@@ -1,0 +1,24 @@
+{
+	"name": "CrewDetailRestResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OSCARRestService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"crewid": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', dataset().crewid)",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,56 @@
+{
+	"name": "CosmosDbSqlApiComplianceCollection",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CosmosDbSQLAPIService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"DocumentExpiryDate": {
+					"type": "string"
+				},
+				"DocumentIssueDate": {
+					"type": "string"
+				},
+				"DocumentNumber": {
+					"type": "string"
+				},
+				"DocumentRemarks": {
+					"type": "string"
+				},
+				"DocumentStatus": {
+					"type": "string"
+				},
+				"DocumentType": {
+					"type": "string"
+				},
+				"DocumentValidityMonth": {
+					"type": "integer"
+				},
+				"MatrixName": {
+					"type": "string"
+				},
+				"MatrixRemarks": {
+					"type": "null"
+				},
+				"MatrixStatus": {
+					"type": "string"
+				},
+				"MatrixType": {
+					"type": "string"
+				},
+				"userId": {
+					"type": "string"
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "compliance"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
