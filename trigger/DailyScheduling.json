@@ -1,0 +1,17 @@
+{
+	"name": "DailyScheduling",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-03-24T00:00:00",
+				"timeZone": "Atlantic Standard Time"
+			}
+		}
+	}
+}
