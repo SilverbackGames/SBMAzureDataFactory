@@ -19,14 +19,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CosmosDbSQLAPIService'"
 		},
-		"AzureDataLakeStorage1_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
-		},
-		"AzureDataLakeStorage1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://sbew1vrtdvsta01.dfs.core.windows.net"
-		},
 		"OSCARRestService_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/"
@@ -124,31 +116,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureFileStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ComplianceRawAzureTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureTableStorage",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"crewid": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "AzureTable",
-				"schema": [],
-				"typeProperties": {
-					"tableName": "complianceraw"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureTableStorage')]"
 			]
 		},
 		{
@@ -770,29 +737,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "integrationRuntime1",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime1')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/OSCARRestService')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -897,413 +841,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OSCARRestService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/crewdetailjson')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"Crew_Code": {
-							"type": "integer"
-						},
-						"Crew_Surname": {
-							"type": "string"
-						},
-						"Crew_Name": {
-							"type": "string"
-						},
-						"Crew_Fathers_Name": {
-							"type": "null"
-						},
-						"Crew_Mothers_Name": {
-							"type": "null"
-						},
-						"Crew_Nationality": {
-							"type": "string"
-						},
-						"Crew_Birth_Date": {
-							"type": "string"
-						},
-						"Crew_Born_Place": {
-							"type": "null"
-						},
-						"Crew_Rank": {
-							"type": "string"
-						},
-						"Crew_Rank_Certificate": {
-							"type": "null"
-						},
-						"Prior_Exp_Months": {
-							"type": "null"
-						},
-						"Prior_Exp_Voyages": {
-							"type": "null"
-						},
-						"Last_Sign_Off_Date": {
-							"type": "null"
-						},
-						"Available_From_Date": {
-							"type": "null"
-						},
-						"Decision_Code": {
-							"type": "string"
-						},
-						"Active_Flag": {
-							"type": "string"
-						},
-						"Remarks1": {
-							"type": "null"
-						},
-						"Remarks2": {
-							"type": "null"
-						},
-						"Health_Status": {
-							"type": "null"
-						},
-						"Status_Code": {
-							"type": "string"
-						},
-						"Source_Code": {
-							"type": "string"
-						},
-						"Crew_Name2": {
-							"type": "null"
-						},
-						"Crew_Nationality2": {
-							"type": "null"
-						},
-						"Next_Vessel": {
-							"type": "string"
-						},
-						"Promotion": {
-							"type": "null"
-						},
-						"Seniority": {
-							"type": "integer"
-						},
-						"Promotion_Date": {
-							"type": "null"
-						},
-						"Promotion_Rank": {
-							"type": "null"
-						},
-						"Date_Last_Med": {
-							"type": "null"
-						},
-						"Prev_Exp_As": {
-							"type": "null"
-						},
-						"Crew_Type": {
-							"type": "string"
-						},
-						"Crew_Religion": {
-							"type": "null"
-						},
-						"Manual_Update": {
-							"type": "null"
-						},
-						"Pension_Flag": {
-							"type": "null"
-						},
-						"Est_Sign_On": {
-							"type": "null"
-						},
-						"Sign_On_Remarks": {
-							"type": "null"
-						},
-						"Sign_On_Remarks2": {
-							"type": "null"
-						},
-						"Sign_On_Remarks3": {
-							"type": "null"
-						},
-						"Port_Authority": {
-							"type": "null"
-						},
-						"Port_Authority2": {
-							"type": "null"
-						},
-						"Rank_Seniority": {
-							"type": "null"
-						},
-						"Application_Date": {
-							"type": "string"
-						},
-						"Crew_Ssn": {
-							"type": "null"
-						},
-						"Crew_Isn_Employment_No": {
-							"type": "null"
-						},
-						"Crew_Employment_Year": {
-							"type": "null"
-						},
-						"Office_Vessel_Flag": {
-							"type": "null"
-						},
-						"On_Vessel": {
-							"type": "null"
-						},
-						"English_Test": {
-							"type": "null"
-						},
-						"Extended_Leave": {
-							"type": "null"
-						},
-						"Lv_Id": {
-							"type": "null"
-						},
-						"Ob_Stat": {
-							"type": "null"
-						},
-						"Lc_Id": {
-							"type": "null"
-						},
-						"Crew_Pool": {
-							"type": "string"
-						},
-						"Crew_Race": {
-							"type": "null"
-						},
-						"Pr_Status": {
-							"type": "null"
-						},
-						"Crew_Rank_Point": {
-							"type": "null"
-						},
-						"Crew_Blood_Type": {
-							"type": "null"
-						},
-						"Crew_Eye_Sight": {
-							"type": "null"
-						},
-						"Crew_Color_Blindness": {
-							"type": "null"
-						},
-						"Crew_Alergies": {
-							"type": "null"
-						},
-						"Crew_Height": {
-							"type": "null"
-						},
-						"Crew_Weight": {
-							"type": "null"
-						},
-						"Crew_Blood_Rh": {
-							"type": "null"
-						},
-						"Cpf_Number": {
-							"type": "null"
-						},
-						"Cpf_Flag": {
-							"type": "string"
-						},
-						"Martial_Status": {
-							"type": "string"
-						},
-						"Wage_Type": {
-							"type": "null"
-						},
-						"Crew_Nationality_Date": {
-							"type": "null"
-						},
-						"Crew_Rank_Certificate_Date": {
-							"type": "null"
-						},
-						"Crews_Rank_Point_Date": {
-							"type": "null"
-						},
-						"Crew_ID": {
-							"type": "null"
-						},
-						"Crew_Socso": {
-							"type": "null"
-						},
-						"Crew_Hrdf": {
-							"type": "null"
-						},
-						"Crew_Srcno": {
-							"type": "null"
-						},
-						"Crew_Sss_No": {
-							"type": "null"
-						},
-						"Crew_Cis_Idno": {
-							"type": "string"
-						},
-						"Crew_Dis_Marks": {
-							"type": "null"
-						},
-						"Crew_Eyes": {
-							"type": "null"
-						},
-						"Crew_Hair": {
-							"type": "null"
-						},
-						"Crew_Principal": {
-							"type": "integer"
-						},
-						"Crew_Group_Date": {
-							"type": "null"
-						},
-						"Crew_Comp_Date": {
-							"type": "null"
-						},
-						"Crew_Phealth_No": {
-							"type": "null"
-						},
-						"Crew_Tin": {
-							"type": "null"
-						},
-						"Crew_Nor_Idno": {
-							"type": "null"
-						},
-						"Crew_Shipnet": {
-							"type": "null"
-						},
-						"Crew_Middlename": {
-							"type": "null"
-						},
-						"Crew_Pagibig_No": {
-							"type": "null"
-						},
-						"Crew_password": {
-							"type": "null"
-						},
-						"Crew_Mother_Maiden_Name": {
-							"type": "null"
-						},
-						"Crew_Shoe_Size": {
-							"type": "null"
-						},
-						"Crew_Boiler_Suit_Size": {
-							"type": "null"
-						},
-						"Crew_Marriage_Date": {
-							"type": "null"
-						},
-						"Crew_Indos_No": {
-							"type": "null"
-						},
-						"Crew_Tax_Regime": {
-							"type": "null"
-						},
-						"Crew_Birth_Country": {
-							"type": "null"
-						},
-						"Crew_Mother_Surname": {
-							"type": "null"
-						},
-						"Crew_Mother_Middle_Name": {
-							"type": "null"
-						},
-						"Crew_Father_Surname": {
-							"type": "null"
-						},
-						"Crew_Father_Middle_Name": {
-							"type": "null"
-						},
-						"Crew_Medical_Insurance_Scheme": {
-							"type": "null"
-						},
-						"Crew_Sb_Country": {
-							"type": "string"
-						},
-						"Crew_Orig_Surname": {
-							"type": "null"
-						},
-						"Crew_Orig_Name": {
-							"type": "null"
-						},
-						"Crew_Orig_Middlename": {
-							"type": "null"
-						},
-						"Crew_Orig_Born_Place": {
-							"type": "null"
-						},
-						"Dualog_Status": {
-							"type": "null"
-						},
-						"Crew_Medication": {
-							"type": "null"
-						},
-						"Crew_Nickname": {
-							"type": "string"
-						},
-						"Crew_Change_Password": {
-							"type": "null"
-						},
-						"Last_Edited_Date": {
-							"type": "string"
-						},
-						"Crew_Sex": {
-							"type": "string"
-						},
-						"Employment_End_Date": {
-							"type": "null"
-						},
-						"Passport_Number": {
-							"type": "string"
-						},
-						"Passport_Issue_Place": {
-							"type": "string"
-						},
-						"Passport_Country": {
-							"type": "string"
-						},
-						"Passport_Details": {
-							"type": "null"
-						},
-						"Passport_Expiry_Date": {
-							"type": "string"
-						},
-						"Passport_Issued_Date": {
-							"type": "string"
-						},
-						"SeamanBook_Number": {
-							"type": "string"
-						},
-						"SeamanBook_Issued": {
-							"type": "string"
-						},
-						"SeamanBook_Expiry": {
-							"type": "string"
-						},
-						"SeamanBook_Place": {
-							"type": "string"
-						},
-						"Crew_Status_Code": {
-							"type": "string"
-						},
-						"Manning_Office": {
-							"type": "string"
-						},
-						"Vessel_Name": {
-							"type": "string"
-						},
-						"Wage_Matrix": {
-							"type": "string"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
 			]
 		},
 		{
@@ -1719,6 +1256,37 @@
 				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiComplianceRawCollection')]",
 				"[concat(variables('factoryId'), '/dataflows/crew_dataflow')]",
 				"[concat(variables('factoryId'), '/dataflows/compliance_dataflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OSCAR_DataSync_DailyScheduling')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "oscar_data_sync_pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2021-03-24T00:00:00",
+						"timeZone": "Atlantic Standard Time",
+						"schedule": {}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/oscar_data_sync_pipeline')]"
 			]
 		}
 	]
