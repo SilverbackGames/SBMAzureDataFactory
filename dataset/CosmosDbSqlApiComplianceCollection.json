@@ -49,7 +49,7 @@
 			}
 		},
 		"typeProperties": {
-			"collectionName": "compliance"
+			"collectionName": "compliance_dw"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
