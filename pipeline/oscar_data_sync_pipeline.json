@@ -199,12 +199,12 @@
 									"referenceName": "crew_dataflow",
 									"type": "DataFlowReference"
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "DataFlowIntegrationRuntime",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
-								"runConcurrently": true
+								"runConcurrently": false
 							}
 						},
 						{
@@ -231,9 +231,9 @@
 									"referenceName": "compliance_dataflow",
 									"type": "DataFlowReference"
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "DataFlowIntegrationRuntime",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine"
 							}
