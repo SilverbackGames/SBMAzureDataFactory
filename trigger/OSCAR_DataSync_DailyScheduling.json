@@ -2,7 +2,7 @@
 	"name": "OSCAR_DataSync_DailyScheduling",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
