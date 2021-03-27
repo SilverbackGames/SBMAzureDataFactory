@@ -200,7 +200,7 @@
 									"type": "DataFlowReference"
 								},
 								"integrationRuntime": {
-									"referenceName": "DataFlowIntegrationRuntime",
+									"referenceName": "crewIntegrationRuntime",
 									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
