@@ -40,7 +40,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AllCrewRestResource",
+						"referenceName": "TEST_AllCrewRestResource",
 						"type": "DatasetReference"
 					}
 				],
@@ -203,8 +203,7 @@
 									"referenceName": "crewIntegrationRuntime",
 									"type": "IntegrationRuntimeReference"
 								},
-								"traceLevel": "Fine",
-								"runConcurrently": false
+								"traceLevel": "Fine"
 							}
 						},
 						{
