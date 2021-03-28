@@ -1,0 +1,15 @@
+{
+	"name": "RestResource1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureFunctionTestRestService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "https://sbew1-vrt-weur-dev-cddb65-apim.azure-api.net/api/crews"
+		},
+		"schema": []
+	}
+}
