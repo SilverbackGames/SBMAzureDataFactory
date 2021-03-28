@@ -16,6 +16,9 @@
 		},
 		"OSCARRestService_properties_typeProperties_url": {
 			"value": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/"
+		},
+		"AzureFunctionTestRestService_properties_typeProperties_url": {
+			"value": "https://sbew1-vrt-weur-dev-cddb65-apim.azure-api.net"
 		}
 	}
 }
