@@ -1,5 +1,5 @@
 {
-	"name": "RestResource1",
+	"name": "TEST_AllCrewRestResource",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureFunctionTestRestService",
