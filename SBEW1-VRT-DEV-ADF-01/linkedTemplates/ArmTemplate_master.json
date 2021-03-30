@@ -19,13 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CosmosDbSQLAPIService'"
 		},
-		"OSCARRestService_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/"
-		},
 		"AzureFunctionTestRestService_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://sbew1-vrt-weur-dev-cddb65-apim.azure-api.net"
+		},
+		"OSCARRestService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -72,26 +72,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "SBEW1-VRT-DEV-ADF-01_ArmTemplate_1",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2018-02-01",
-			"properties": {
-				"mode": "incremental",
-				"templateLink": {
-					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"factoryName": {
-						"value": "[parameters('factoryName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'SBEW1-VRT-DEV-ADF-01_ArmTemplate_0')]"
-			]
 		}
 	]
 }
