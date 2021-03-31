@@ -40,7 +40,7 @@
 			}
 		},
 		"typeProperties": {
-			"collectionName": "crew_dw"
+			"collectionName": "crew"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
