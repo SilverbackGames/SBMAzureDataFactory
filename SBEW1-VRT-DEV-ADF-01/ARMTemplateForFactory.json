@@ -76,7 +76,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "TEST_AllCrewRestResource",
+								"referenceName": "AllCrewRestResource",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -336,7 +336,7 @@
 				"lastPublishTime": "2021-03-24T12:22:27Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/TEST_AllCrewRestResource')]",
+				"[concat(variables('factoryId'), '/datasets/AllCrewRestResource')]",
 				"[concat(variables('factoryId'), '/datasets/AllCrewJson')]",
 				"[concat(variables('factoryId'), '/datasets/CrewDetailRestResource')]",
 				"[concat(variables('factoryId'), '/datasets/CosmosDbSqlApiCrewRawCollection')]",
