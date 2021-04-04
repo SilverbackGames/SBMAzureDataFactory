@@ -68,7 +68,7 @@
 						"value": "@activity('All crew look up').output.value",
 						"type": "Expression"
 					},
-					"isSequential": false,
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "Get crew detail",
@@ -195,7 +195,7 @@
 									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
-								"runConcurrently": true
+								"runConcurrently": false
 							}
 						},
 						{
@@ -227,7 +227,7 @@
 									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
-								"runConcurrently": true
+								"runConcurrently": false
 							}
 						}
 					]
