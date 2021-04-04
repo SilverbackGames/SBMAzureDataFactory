@@ -199,9 +199,9 @@
 									"referenceName": "crew_dataflow",
 									"type": "DataFlowReference"
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "VRintegrationRuntime",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine"
 							}
