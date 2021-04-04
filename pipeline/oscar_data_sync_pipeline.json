@@ -84,11 +84,11 @@
 							"userProperties": [
 								{
 									"name": "Source",
-									"value": "@{concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', item())}"
+									"value": "@{concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', item().Code)}"
 								},
 								{
 									"name": "Destination",
-									"value": "crew"
+									"value": "crew_raw"
 								}
 							],
 							"typeProperties": {
@@ -200,10 +200,11 @@
 									"type": "DataFlowReference"
 								},
 								"integrationRuntime": {
-									"referenceName": "VRintegrationRuntime",
+									"referenceName": "VRIntegrationRuntime60Sec",
 									"type": "IntegrationRuntimeReference"
 								},
-								"traceLevel": "Fine"
+								"traceLevel": "Fine",
+								"runConcurrently": true
 							}
 						},
 						{
@@ -231,10 +232,11 @@
 									"type": "DataFlowReference"
 								},
 								"integrationRuntime": {
-									"referenceName": "VRintegrationRuntime",
+									"referenceName": "VRIntegrationRuntime60Sec",
 									"type": "IntegrationRuntimeReference"
 								},
-								"traceLevel": "Fine"
+								"traceLevel": "Fine",
+								"runConcurrently": true
 							}
 						}
 					]
