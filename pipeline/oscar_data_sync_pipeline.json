@@ -81,16 +81,7 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": [
-								{
-									"name": "Source",
-									"value": "@{concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/details/', item().Code)}"
-								},
-								{
-									"name": "Destination",
-									"value": "crew_raw"
-								}
-							],
+							"userProperties": [],
 							"typeProperties": {
 								"source": {
 									"type": "RestSource",
