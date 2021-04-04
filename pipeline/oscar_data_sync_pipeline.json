@@ -40,7 +40,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AllCrewRestResource",
+						"referenceName": "TEST_AllCrewRestResource",
 						"type": "DatasetReference"
 					}
 				],
