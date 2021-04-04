@@ -222,9 +222,9 @@
 									"referenceName": "compliance_dataflow",
 									"type": "DataFlowReference"
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "VRIntegrationRuntime60Min2",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
 								"runConcurrently": true
