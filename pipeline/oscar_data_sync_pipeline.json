@@ -68,7 +68,7 @@
 						"value": "@activity('All crew look up').output.value",
 						"type": "Expression"
 					},
-					"isSequential": true,
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Get crew detail",
@@ -190,12 +190,11 @@
 									"referenceName": "crew_dataflow",
 									"type": "DataFlowReference"
 								},
-								"integrationRuntime": {
-									"referenceName": "VRIntegrationRuntime60Min1",
-									"type": "IntegrationRuntimeReference"
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
 								},
-								"traceLevel": "Fine",
-								"runConcurrently": false
+								"traceLevel": "Fine"
 							}
 						},
 						{
@@ -222,12 +221,11 @@
 									"referenceName": "compliance_dataflow",
 									"type": "DataFlowReference"
 								},
-								"integrationRuntime": {
-									"referenceName": "VRIntegrationRuntime60Min2",
-									"type": "IntegrationRuntimeReference"
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
 								},
-								"traceLevel": "Fine",
-								"runConcurrently": false
+								"traceLevel": "Fine"
 							}
 						}
 					]
