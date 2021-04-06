@@ -196,12 +196,12 @@
 										}
 									}
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "VRIntegrationRuntime10minTtL",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
-								"runConcurrently": true
+								"runConcurrently": false
 							}
 						},
 						{
@@ -239,7 +239,7 @@
 									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
-								"runConcurrently": true
+								"runConcurrently": false
 							}
 						}
 					]
