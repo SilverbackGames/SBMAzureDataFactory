@@ -235,7 +235,7 @@
 									}
 								},
 								"integrationRuntime": {
-									"referenceName": "VRIntegrationRuntime10minTtL",
+									"referenceName": "VRIntegrationRuntime10Min8Core",
 									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
