@@ -241,37 +241,6 @@
 								"traceLevel": "Fine",
 								"runConcurrently": true
 							}
-						},
-						{
-							"name": "Crew Data Flow_copy1",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "crew_dataflow",
-									"type": "DataFlowReference",
-									"parameters": {
-										"crewId": {
-											"value": "'@{item().Code}'",
-											"type": "Expression"
-										}
-									}
-								},
-								"integrationRuntime": {
-									"referenceName": "VRIntegrationRuntime10minTtL",
-									"type": "IntegrationRuntimeReference"
-								},
-								"traceLevel": "Fine",
-								"runConcurrently": true
-							}
 						}
 					]
 				}
