@@ -197,9 +197,9 @@
 										}
 									}
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "VRTrainingIR8Core1HourTTL",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
 								"runConcurrently": false
@@ -235,9 +235,9 @@
 										}
 									}
 								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "VRTrainingIR8Core1HourTTL",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine",
 								"runConcurrently": false
