@@ -5,11 +5,6 @@
 			"referenceName": "CosmosDbSQLAPIService",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"crewId": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"type": "CosmosDbSqlApiCollection",
 		"schema": {
