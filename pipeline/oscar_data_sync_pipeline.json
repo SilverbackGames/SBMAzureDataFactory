@@ -188,7 +188,13 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "crew_dataflow",
-									"type": "DataFlowReference"
+									"type": "DataFlowReference",
+									"parameters": {
+										"crewId": {
+											"value": "@item().Code",
+											"type": "Expression"
+										}
+									}
 								},
 								"integrationRuntime": {
 									"referenceName": "VRIntegrationRuntime10minTtL",
