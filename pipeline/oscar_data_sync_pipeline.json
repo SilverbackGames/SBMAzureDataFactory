@@ -69,7 +69,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
-					"batchCount": 8,
+					"batchCount": 50,
 					"activities": [
 						{
 							"name": "Get crew detail",
@@ -197,12 +197,11 @@
 										}
 									}
 								},
-								"integrationRuntime": {
-									"referenceName": "VRTrainingIR8Core1HourTTL",
-									"type": "IntegrationRuntimeReference"
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
 								},
-								"traceLevel": "Fine",
-								"runConcurrently": false
+								"traceLevel": "Fine"
 							}
 						},
 						{
@@ -235,12 +234,11 @@
 										}
 									}
 								},
-								"integrationRuntime": {
-									"referenceName": "VRTrainingIR8Core1HourTTL",
-									"type": "IntegrationRuntimeReference"
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
 								},
-								"traceLevel": "Fine",
-								"runConcurrently": false
+								"traceLevel": "Fine"
 							}
 						}
 					]
