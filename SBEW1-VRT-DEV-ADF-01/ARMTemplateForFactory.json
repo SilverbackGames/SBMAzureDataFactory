@@ -107,7 +107,7 @@
 								"type": "Expression"
 							},
 							"isSequential": false,
-							"batchCount": 8,
+							"batchCount": 20,
 							"activities": [
 								{
 									"name": "Get crew detail",
@@ -246,8 +246,7 @@
 											"coreCount": 8,
 											"computeType": "General"
 										},
-										"traceLevel": "Fine",
-										"runConcurrently": false
+										"traceLevel": "Fine"
 									}
 								},
 								{
@@ -289,8 +288,7 @@
 											"coreCount": 8,
 											"computeType": "General"
 										},
-										"traceLevel": "Fine",
-										"runConcurrently": false
+										"traceLevel": "Fine"
 									}
 								}
 							]
@@ -1218,25 +1216,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/VRIntegrationRuntime10minTtL')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 10
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -1359,25 +1338,6 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"preventDataExfiltration": false
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/VRIntegrationRuntime10Min8Core')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 16,
-							"timeToLive": 10
-						}
-					}
-				}
 			},
 			"dependsOn": []
 		}
