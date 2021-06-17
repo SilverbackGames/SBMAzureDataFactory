@@ -7,10 +7,10 @@
 		"typeProperties": {
 			"connectionString": "integrated security=True;data source=NLAE501DVSQL04\\DEV01;initial catalog=SBM_HUB",
 			"userName": "SBM\\svc_pbi_oscar_stg",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI0ZWNlZTM0YS0xZmY0LTRkMWItYTQ2Yy1kMzNhNTdjYTJmNmEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkNzE2NjU0Yy1hNWY2LTQyMTktYTM2Ny03NDk5NDViZDUyMWYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
-			"referenceName": "VRTrainingSHITIR01",
+			"referenceName": "VRTraingSHITIR01",
 			"type": "IntegrationRuntimeReference"
 		}
 	}
