@@ -1,0 +1,35 @@
+{
+	"name": "crew_dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbSqlApiCrewRawCollection",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CosmosDbSqlApiCrewCollection",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1"
+				},
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"script": "parameters{\n\tcrewId as string (\"4271\")\n}\nsource(output(\n\t\tSBMer as string,\n\t\tid as integer,\n\t\tname as string,\n\t\tpool as string,\n\t\trank as string,\n\t\tsurname as string,\n\t\tvesselName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: (concat('SELECT c.Crew_Code AS id, c.Crew_Surname AS surname, c.Crew_Name as name, c.Crew_Rank as rank, c.Crew_Type AS SBMer, c.Vessel_Name AS vesselName, c.Crew_Pool as pool FROM c WHERE c.Crew_Code = ', $crewId)),\n\tformat: 'documentQuery',\n\tsystemColumns: false,\n\tthroughput: 3500) ~> source1\nsource1 derive(SBMer = !equalsIgnoreCase(byName('SBMer'), \"VENDOR\") ||  isNull(byName('SBMer')),\n\t\tregion = iif(contains(['FPSO Cidade de Saquarema', 'FPSO Cidade de Maricá', 'FPSO Cidade de Ilhabela', 'FPSO Cidade de Paraty', 'FPSO CIdade de Anchieta', 'FPSO Espírito Santo', 'FPSO Capixaba'], #item == byName('vesselName')), \"1\", \"2\"),\n\t\tid = toString(byName('id'))) ~> DerivedColumn1\nDerivedColumn1 alterRow(upsertIf(true())) ~> AlterRow1\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tname as string,\n\t\tsurname as string,\n\t\tpool as string,\n\t\trank as string,\n\t\toffshore as boolean,\n\t\tSBMer as boolean,\n\t\tvesselName as string,\n\t\tregion as string,\n\t\tdepartment as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:true,\n\tformat: 'document',\n\tpartitionKey: ['/id'],\n\tthroughput: 3500,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}

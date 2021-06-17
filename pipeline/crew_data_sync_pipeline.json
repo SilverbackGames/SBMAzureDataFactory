@@ -1,0 +1,116 @@
+{
+	"name": "crew_data_sync_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Crew",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CREW_CODE",
+									"type": "Int32"
+								},
+								"sink": {
+									"path": "$['id']"
+								}
+							},
+							{
+								"source": {
+									"name": "CREW_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['name']"
+								}
+							},
+							{
+								"source": {
+									"name": "CREW_SURNAME",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['surname']"
+								}
+							},
+							{
+								"source": {
+									"name": "CREW_POOL",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['pool']"
+								}
+							},
+							{
+								"source": {
+									"name": "CREW_RANK",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['rank']"
+								}
+							},
+							{
+								"source": {
+									"name": "VESSEL_NAME",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['vesselName']"
+								}
+							},
+							{
+								"source": {
+									"name": "CREW_TYPE",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['type']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SqlServerCrewTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CrewCosmosDbSqlApiCollection",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-04-30T18:03:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

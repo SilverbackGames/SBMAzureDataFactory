@@ -1,0 +1,19 @@
+{
+	"name": "AzureFunctionTestRestService",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://sbew1-vrt-weur-dev-cddb65-apim.azure-api.net",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"Authorization": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"name": "CrewComplianceRestResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OSCARRestService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"crew_code": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/crew/complianceStatus?crew_code=', dataset().crew_code, '&isSim=true')",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
