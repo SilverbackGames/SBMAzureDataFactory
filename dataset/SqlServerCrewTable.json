@@ -1,0 +1,558 @@
+{
+	"name": "SqlServerCrewTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServer1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "CREW_CODE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CREW_SURNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_FATHERS_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MOTHERS_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NATIONALITY",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_BIRTH_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_BORN_PLACE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_RANK",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_RANK_CERTIFICATE",
+				"type": "varchar"
+			},
+			{
+				"name": "PRIOR_EXP_MONTHS",
+				"type": "varchar"
+			},
+			{
+				"name": "PRIOR_EXP_VOYAGES",
+				"type": "varchar"
+			},
+			{
+				"name": "LAST_SIGN_OFF_DATE",
+				"type": "varchar"
+			},
+			{
+				"name": "AVAILABLE_FROM_DATE",
+				"type": "varchar"
+			},
+			{
+				"name": "DECISION_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "ACTIVE_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "REMARKS1",
+				"type": "varchar"
+			},
+			{
+				"name": "REMARKS2",
+				"type": "varchar"
+			},
+			{
+				"name": "HEALTH_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUS_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SOURCE_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NAME2",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NATIONALITY2",
+				"type": "varchar"
+			},
+			{
+				"name": "NEXT_VESSEL",
+				"type": "varchar"
+			},
+			{
+				"name": "PROMOTION",
+				"type": "varchar"
+			},
+			{
+				"name": "SENIORITY",
+				"type": "decimal",
+				"precision": 28,
+				"scale": 2
+			},
+			{
+				"name": "PROMOTION_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "PROMOTION_RANK",
+				"type": "varchar"
+			},
+			{
+				"name": "DATE_LAST_MED",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "PREV_EXP_AS",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_RELIGION",
+				"type": "varchar"
+			},
+			{
+				"name": "MANUAL_UPDATE",
+				"type": "varchar"
+			},
+			{
+				"name": "PENSION_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "EST_SIGN_ON",
+				"type": "varchar"
+			},
+			{
+				"name": "SIGN_ON_REMARKS",
+				"type": "varchar"
+			},
+			{
+				"name": "SIGN_ON_REMARKS2",
+				"type": "varchar"
+			},
+			{
+				"name": "SIGN_ON_REMARKS3",
+				"type": "varchar"
+			},
+			{
+				"name": "PORT_AUTHORITY",
+				"type": "varchar"
+			},
+			{
+				"name": "PORT_AUTHORITY2",
+				"type": "varchar"
+			},
+			{
+				"name": "RANK_SENIORITY",
+				"type": "varchar"
+			},
+			{
+				"name": "APPLICATION_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_SSN",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ISN_EMPLOYMENT_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_EMPLOYMENT_YEAR",
+				"type": "varchar"
+			},
+			{
+				"name": "OFFICE_VESSEL_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "ON_VESSEL",
+				"type": "varchar"
+			},
+			{
+				"name": "ENGLISH_TEST",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EXTENDED_LEAVE",
+				"type": "varchar"
+			},
+			{
+				"name": "LV_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OB_STAT",
+				"type": "varchar"
+			},
+			{
+				"name": "LC_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CREW_POOL",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_RACE",
+				"type": "varchar"
+			},
+			{
+				"name": "PR_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_RANK_POINT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CREW_BLOOD_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_EYE_SIGHT",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_COLOR_BLINDNESS",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ALERGIES",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_HEIGHT",
+				"type": "decimal",
+				"precision": 28,
+				"scale": 2
+			},
+			{
+				"name": "CREW_WEIGHT",
+				"type": "decimal",
+				"precision": 28,
+				"scale": 2
+			},
+			{
+				"name": "CREW_BLOOD_RH",
+				"type": "varchar"
+			},
+			{
+				"name": "CPF_NUMBER",
+				"type": "varchar"
+			},
+			{
+				"name": "CPF_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "MARTIAL_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "WAGE_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NATIONALITY_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_RANK_CERTIFICATE_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREWS_RANK_POINT_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SOCSO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_HRDF",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SRCNO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SSS_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_CIS_IDNO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_DIS_MARKS",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_EYES",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_HAIR",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_PRINCIPAL",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CREW_GROUP_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_COMP_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_PHEALTH_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_TIN",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NOR_IDNO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SHIPNET",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MIDDLENAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_PAGIBIG_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_PASSWORD",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MOTHER_MAIDEN_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SHOE_SIZE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_BOILER_SUIT_SIZE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MARRIAGE_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_INDOS_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_TAX_REGIME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_BIRTH_COUNTRY",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MOTHER_SURNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MOTHER_MIDDLE_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_FATHER_SURNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_FATHER_MIDDLE_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MEDICAL_INSURANCE_SCHEME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_SB_COUNTRY",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ORIG_SURNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ORIG_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ORIG_MIDDLENAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_ORIG_BORN_PLACE",
+				"type": "varchar"
+			},
+			{
+				"name": "DUALOG_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_MEDICATION",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_NICKNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_CHANGE_PASSWORD",
+				"type": "varchar"
+			},
+			{
+				"name": "LAST_EDITED_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CREW_SEX",
+				"type": "varchar"
+			},
+			{
+				"name": "EMPLOYMENT_END_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "PASSPORT_NUMBER",
+				"type": "varchar"
+			},
+			{
+				"name": "PASSPORT_ISSUE_PLACE",
+				"type": "varchar"
+			},
+			{
+				"name": "PASSPORT_COUNTRY",
+				"type": "varchar"
+			},
+			{
+				"name": "PASSPORT_DETAILS",
+				"type": "varchar"
+			},
+			{
+				"name": "PASSPORT_EXPIRY_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "PASSPORT_ISSUED_DATE",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "SEAMANBOOK_NUMBER",
+				"type": "varchar"
+			},
+			{
+				"name": "SEAMANBOOK_ISSUED",
+				"type": "varchar"
+			},
+			{
+				"name": "SEAMANBOOK_EXPIRY",
+				"type": "varchar"
+			},
+			{
+				"name": "SEAMANBOOK_PLACE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREW_STATUS_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "MANNING_OFFICE",
+				"type": "varchar"
+			},
+			{
+				"name": "VESSEL_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "WAGE_MATRIX",
+				"type": "varchar"
+			},
+			{
+				"name": "UPDATE_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "HUB_COMPAS_CREW_DETAILS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

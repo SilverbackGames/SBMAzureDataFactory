@@ -7,21 +7,7 @@
 		"typeProperties": {
 			"url": "https://sbmstaging.compas.cloud/CompasAPI/v2/CompasRestService.svc/",
 			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous",
-			"authHeaders": {
-				"Authorization": {
-					"type": "SecureString",
-					"value": "**********"
-				},
-				"Content-Type": {
-					"type": "SecureString",
-					"value": "**********"
-				}
-			}
-		},
-		"connectVia": {
-			"referenceName": "integrationRuntime1",
-			"type": "IntegrationRuntimeReference"
+			"authenticationType": "Anonymous"
 		}
 	}
 }
