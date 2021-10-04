@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "SBEW1-VRT-PR-ADF-01"
+		},
+		"CosmosDbSQLAPIService_connectionString": {
+			"value": ""
+		},
+		"SqlServer1_connectionString": {
+			"value": ""
+		},
+		"SqlServer1_password": {
+			"value": ""
+		},
+		"SqlServer1_properties_typeProperties_userName": {
+			"value": "SBM\\svc_pbi_oscar"
+		},
+		"VRTrainingSHIR01_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/d9d76d24-dcda-4e91-b4ec-383156d00202/resourcegroups/VirtualRealityTrainingBEDEV-RG/providers/Microsoft.DataFactory/factories/SBEW1-VRT-DEV-ADF-01/integrationruntimes/VRTrainingSHITIR01"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

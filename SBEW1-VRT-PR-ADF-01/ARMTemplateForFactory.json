@@ -1,0 +1,862 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "SBEW1-VRT-PR-ADF-01"
+		},
+		"CosmosDbSQLAPIService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CosmosDbSQLAPIService'"
+		},
+		"SqlServer1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SqlServer1'"
+		},
+		"SqlServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SqlServer1'"
+		},
+		"SqlServer1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "SBM\\svc_pbi_oscar"
+		},
+		"VRTrainingSHIR01_properties_typeProperties_linkedInfo_resourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/d9d76d24-dcda-4e91-b4ec-383156d00202/resourcegroups/VirtualRealityTrainingBEDEV-RG/providers/Microsoft.DataFactory/factories/SBEW1-VRT-DEV-ADF-01/integrationruntimes/VRTrainingSHITIR01"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/crew_data_sync_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Crew",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "upsert",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "CREW_CODE",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['id']"
+										}
+									},
+									{
+										"source": {
+											"name": "CREW_NAME",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['name']"
+										}
+									},
+									{
+										"source": {
+											"name": "CREW_SURNAME",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['surname']"
+										}
+									},
+									{
+										"source": {
+											"name": "CREW_POOL",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['pool']"
+										}
+									},
+									{
+										"source": {
+											"name": "CREW_RANK",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['rank']"
+										}
+									},
+									{
+										"source": {
+											"name": "VESSEL_NAME",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['vesselName']"
+										}
+									},
+									{
+										"source": {
+											"name": "CREW_TYPE",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['type']"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SqlServerCrewTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CrewCosmosDbSqlApiCollection",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-04-30T18:03:09Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerCrewTable')]",
+				"[concat(variables('factoryId'), '/datasets/CrewCosmosDbSqlApiCollection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CrewCosmosDbSqlApiCollection')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CosmosDbSQLAPIService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"surname": {
+							"type": "string"
+						},
+						"pool": {
+							"type": "string"
+						},
+						"rank": {
+							"type": "string"
+						},
+						"vesselName": {
+							"type": "string"
+						},
+						"type": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "crew"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CosmosDbSQLAPIService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerCrewTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlServer1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "CREW_CODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CREW_SURNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_FATHERS_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MOTHERS_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NATIONALITY",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_BIRTH_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_BORN_PLACE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_RANK",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_RANK_CERTIFICATE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRIOR_EXP_MONTHS",
+						"type": "varchar"
+					},
+					{
+						"name": "PRIOR_EXP_VOYAGES",
+						"type": "varchar"
+					},
+					{
+						"name": "LAST_SIGN_OFF_DATE",
+						"type": "varchar"
+					},
+					{
+						"name": "AVAILABLE_FROM_DATE",
+						"type": "varchar"
+					},
+					{
+						"name": "DECISION_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "ACTIVE_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "REMARKS1",
+						"type": "varchar"
+					},
+					{
+						"name": "REMARKS2",
+						"type": "varchar"
+					},
+					{
+						"name": "HEALTH_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUS_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SOURCE_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NAME2",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NATIONALITY2",
+						"type": "varchar"
+					},
+					{
+						"name": "NEXT_VESSEL",
+						"type": "varchar"
+					},
+					{
+						"name": "PROMOTION",
+						"type": "varchar"
+					},
+					{
+						"name": "SENIORITY",
+						"type": "decimal",
+						"precision": 28,
+						"scale": 2
+					},
+					{
+						"name": "PROMOTION_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "PROMOTION_RANK",
+						"type": "varchar"
+					},
+					{
+						"name": "DATE_LAST_MED",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "PREV_EXP_AS",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_RELIGION",
+						"type": "varchar"
+					},
+					{
+						"name": "MANUAL_UPDATE",
+						"type": "varchar"
+					},
+					{
+						"name": "PENSION_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "EST_SIGN_ON",
+						"type": "varchar"
+					},
+					{
+						"name": "SIGN_ON_REMARKS",
+						"type": "varchar"
+					},
+					{
+						"name": "SIGN_ON_REMARKS2",
+						"type": "varchar"
+					},
+					{
+						"name": "SIGN_ON_REMARKS3",
+						"type": "varchar"
+					},
+					{
+						"name": "PORT_AUTHORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "PORT_AUTHORITY2",
+						"type": "varchar"
+					},
+					{
+						"name": "RANK_SENIORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "APPLICATION_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_SSN",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ISN_EMPLOYMENT_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_EMPLOYMENT_YEAR",
+						"type": "varchar"
+					},
+					{
+						"name": "OFFICE_VESSEL_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "ON_VESSEL",
+						"type": "varchar"
+					},
+					{
+						"name": "ENGLISH_TEST",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EXTENDED_LEAVE",
+						"type": "varchar"
+					},
+					{
+						"name": "LV_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OB_STAT",
+						"type": "varchar"
+					},
+					{
+						"name": "LC_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CREW_POOL",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_RACE",
+						"type": "varchar"
+					},
+					{
+						"name": "PR_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_RANK_POINT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CREW_BLOOD_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_EYE_SIGHT",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_COLOR_BLINDNESS",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ALERGIES",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_HEIGHT",
+						"type": "decimal",
+						"precision": 28,
+						"scale": 2
+					},
+					{
+						"name": "CREW_WEIGHT",
+						"type": "decimal",
+						"precision": 28,
+						"scale": 2
+					},
+					{
+						"name": "CREW_BLOOD_RH",
+						"type": "varchar"
+					},
+					{
+						"name": "CPF_NUMBER",
+						"type": "varchar"
+					},
+					{
+						"name": "CPF_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "MARTIAL_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WAGE_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NATIONALITY_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_RANK_CERTIFICATE_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREWS_RANK_POINT_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SOCSO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_HRDF",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SRCNO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SSS_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_CIS_IDNO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_DIS_MARKS",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_EYES",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_HAIR",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_PRINCIPAL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CREW_GROUP_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_COMP_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_PHEALTH_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_TIN",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NOR_IDNO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SHIPNET",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MIDDLENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_PAGIBIG_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_PASSWORD",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MOTHER_MAIDEN_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SHOE_SIZE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_BOILER_SUIT_SIZE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MARRIAGE_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_INDOS_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_TAX_REGIME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_BIRTH_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MOTHER_SURNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MOTHER_MIDDLE_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_FATHER_SURNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_FATHER_MIDDLE_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MEDICAL_INSURANCE_SCHEME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_SB_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ORIG_SURNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ORIG_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ORIG_MIDDLENAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_ORIG_BORN_PLACE",
+						"type": "varchar"
+					},
+					{
+						"name": "DUALOG_STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_MEDICATION",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_NICKNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_CHANGE_PASSWORD",
+						"type": "varchar"
+					},
+					{
+						"name": "LAST_EDITED_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CREW_SEX",
+						"type": "varchar"
+					},
+					{
+						"name": "EMPLOYMENT_END_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "PASSPORT_NUMBER",
+						"type": "varchar"
+					},
+					{
+						"name": "PASSPORT_ISSUE_PLACE",
+						"type": "varchar"
+					},
+					{
+						"name": "PASSPORT_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "PASSPORT_DETAILS",
+						"type": "varchar"
+					},
+					{
+						"name": "PASSPORT_EXPIRY_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "PASSPORT_ISSUED_DATE",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "SEAMANBOOK_NUMBER",
+						"type": "varchar"
+					},
+					{
+						"name": "SEAMANBOOK_ISSUED",
+						"type": "varchar"
+					},
+					{
+						"name": "SEAMANBOOK_EXPIRY",
+						"type": "varchar"
+					},
+					{
+						"name": "SEAMANBOOK_PLACE",
+						"type": "varchar"
+					},
+					{
+						"name": "CREW_STATUS_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MANNING_OFFICE",
+						"type": "varchar"
+					},
+					{
+						"name": "VESSEL_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "WAGE_MATRIX",
+						"type": "varchar"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "HUB_COMPAS_CREW_DETAILS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SqlServer1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CosmosDbSQLAPIService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('CosmosDbSQLAPIService_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServer1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('SqlServer1_connectionString')]",
+					"userName": "[parameters('SqlServer1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('SqlServer1_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "VRTrainingSHIR01",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/VRTrainingSHIR01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CrewDataSynctrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "crew_data_sync_pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2021-06-21T07:00:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"weekDays": [
+								"Monday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/crew_data_sync_pipeline')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VRTrainingSHIR01')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "SHIR between DEV, STG, and PROD Subscription",
+				"typeProperties": {
+					"linkedInfo": {
+						"resourceId": "[parameters('VRTrainingSHIR01_properties_typeProperties_linkedInfo_resourceId')]",
+						"authorizationType": "Rbac"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
