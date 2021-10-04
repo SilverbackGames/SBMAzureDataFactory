@@ -1,10 +1,6 @@
 {
 	"name": "CrewComplianceRestResource",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "OSCARRestService",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"crew_code": {
 				"type": "string"

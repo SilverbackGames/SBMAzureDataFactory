@@ -1,10 +1,6 @@
 {
 	"name": "CrewDetailRestResource",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "OSCARRestService",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"crewid": {
 				"type": "string"

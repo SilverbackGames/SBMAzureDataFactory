@@ -1,10 +1,6 @@
 {
 	"name": "TEST_AllCrewRestResource",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "AzureFunctionTestRestService",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {

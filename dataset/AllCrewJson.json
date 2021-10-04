@@ -1,10 +1,6 @@
 {
 	"name": "AllCrewJson",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "AzureFileStorage1",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {

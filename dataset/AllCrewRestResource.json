@@ -1,10 +1,6 @@
 {
 	"name": "AllCrewRestResource",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "OSCARRestService",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
