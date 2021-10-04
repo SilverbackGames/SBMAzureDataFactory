@@ -1,0 +1,13 @@
+{
+	"name": "VRTrainingSHIR01",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "SHIR between DEV, STG, and PROD Subscription",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/d9d76d24-dcda-4e91-b4ec-383156d00202/resourcegroups/VirtualRealityTrainingBEDEV-RG/providers/Microsoft.DataFactory/factories/SBEW1-VRT-DEV-ADF-01/integrationruntimes/VRTrainingSHITIR01",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}
