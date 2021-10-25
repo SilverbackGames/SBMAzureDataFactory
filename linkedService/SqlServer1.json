@@ -7,10 +7,10 @@
 		"typeProperties": {
 			"connectionString": "integrated security=True;data source=NLAE501PRSQL10\\PRD01;initial catalog=SBM_HUB",
 			"userName": "SBM\\svc_pbi_oscar",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjOWI2ODMyOS01NzgyLTQ4ZDYtODY4Mi1iOWQ5ZjQwNWE4NGMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJiMWZiMjQ4Ni04Y2VlLTRkODYtYTZhYy05Y2E5Y2MzOWU3MWQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
-			"referenceName": "VRTrainingSHIR01",
+			"referenceName": "AZPRVRTSHIR01",
 			"type": "IntegrationRuntimeReference"
 		}
 	}
