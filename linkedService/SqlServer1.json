@@ -7,7 +7,7 @@
 		"typeProperties": {
 			"connectionString": "integrated security=True;data source=NLAE501DVSQL04\\DEV01;initial catalog=SBM_HUB",
 			"userName": "SBM\\svc_pbi_oscar_stg",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI1OTlmM2E3ZC1iNmE3LTQwZjgtYmJkMi04ZTEzY2YxZjZmZjEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4NWZhMjYyZS0yZDY2LTRmN2EtOTZkYS04NzBkMjZjNTQ5ODkiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "AZDVVRTSHIR",
