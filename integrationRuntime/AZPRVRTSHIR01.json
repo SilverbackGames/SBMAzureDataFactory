@@ -1,0 +1,7 @@
+{
+	"name": "AZPRVRTSHIR01",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "Self-hosted Integration Runtime (PROD)"
+	}
+}
