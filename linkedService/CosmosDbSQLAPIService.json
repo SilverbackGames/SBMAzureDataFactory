@@ -5,8 +5,8 @@
 		"annotations": [],
 		"type": "CosmosDb",
 		"typeProperties": {
-			"connectionString": "AccountEndpoint=https://sbew1-vrt-pr-cos-01.documents.azure.com:443/;Database=VRTraining;",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI0NmUxNWYxNy00NTRhLTQ0ZDUtYjU0YS1iZGE1MWE0NTcxYzkiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"connectionString": "AccountEndpoint=https://sbew1-vrt-pr-cos-02.documents.azure.com:443/;Database=VRTraining;",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2ZDI1NTkyZi1mOGYxLTRhYjktYmM4ZS1mM2E3MzExNmQ0ZDgiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "AZPRVRTSHIR01",
